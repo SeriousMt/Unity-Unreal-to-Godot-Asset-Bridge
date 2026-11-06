@@ -20,12 +20,44 @@ Unreal Engine installation.
 Requires **Godot 4.3+**. Optional: Python 3 (Unreal content), ImageMagick
 (PSD/TIFF textures), g++ or clang++ (UE5 content).
 
+Copy the addon into your Godot project (the folder must end up at
+`res://addons/asset_bridge/`):
+
 ```bash
 cp -r addons/asset_bridge ~/my_game/addons/
 ```
 
-Enable **Asset Bridge** under *Project → Project Settings → Plugins* and use
-the dock, or use the command line:
+### In the Godot editor
+
+1. Open your project in Godot and go to **Project → Project Settings →
+   Plugins**. Tick **Enable** next to **Asset Bridge**. A dock named
+   *Asset Bridge* appears at the top right, next to *Scene* and *Import*.
+   If you don't see it, check the tabs above the Scene tree.
+2. In the dock, click **File…** to pick a `.unitypackage`, `.zip`, `.fbx`,
+   `.glb`, `.gltf` or `.obj`, or **Folder…** to pick a Unity project, an
+   unpacked download or an Unreal `Content/` folder. The file can be anywhere
+   on disk; it doesn't have to be inside the project. You can also paste a path
+   into the *Source* field.
+3. Check the **Output folder**. It is filled in as `res://imported/<name>`;
+   change it if you want the assets somewhere else.
+4. Optionally click **Inspect** to see what Asset Bridge found and how it would
+   import it. Nothing is written.
+5. Click **Import**. The editor is busy while the files are converted (large
+   Unreal packs can take minutes), then Godot imports the new textures and
+   models. The log shows **Done.** when everything is finished.
+6. Read the yellow **warning** and cyan **hint** lines in the log: they say
+   what was skipped and what to do about it.
+7. In the *FileSystem* dock, open the output folder. Unity prefabs and scenes
+   are `.tscn` files you can open or drag into your scene; models are
+   `.fbx`, `.glb` or `.gltf` files with their materials already assigned (double-click one
+   to open Godot's import settings, or drag it into a scene). Materials are
+   `.tres` files. `asset_bridge_report.json` in the output folder records what
+   happened.
+
+The other options in the dock are explained in [Usage](docs/usage.md#editor-dock);
+the defaults are right for most downloads.
+
+### From the command line
 
 ```bash
 export GODOT=/path/to/godot
