@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Asset Bridge command line wrapper (Linux/macOS).
+#
+#   asset-bridge [--project DIR] [--verbose] inspect <source>
+#   asset-bridge [--project DIR] [--verbose] import  <source> [--out res://imported/name] [options]
+#   asset-bridge [--project DIR] [--verbose] verify  <res://dir>
+#
+# Prints the JSON result on stdout (Godot's own log goes to stderr with --verbose).
+# GODOT env var selects the Godot 4.3+ binary; default: godot4 or godot on PATH.
+# The project must contain addons/asset_bridge.
+
+set -uo pipefail
+
+GODOT_BIN="${GODOT:-$(command -v godot4 || command -v godot || true)}"
+PROJECT="$PWD"
+VERBOSE=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --project) PROJECT="$2"; shift 2 ;;
+    --verbose) VERBOSE=1; shift ;;
+    *) break ;;
+  esac
+done
+
+if [[ -z "$GODOT_BIN" ]]; then
+  echo '{"ok":false,"error":"Godot not found; set GODOT=/path/to/godot"}'; exit 2
+fi
+if [[ ! -f "$PROJECT/project.godot" ]]; then
+  echo "{\"ok\":false,\"error\":\"not a Godot project: $PROJECT\"}"; exit 2
+fi
+if [[ ! -f "$PROJECT/addons/asset_bridge/cli.gd" ]]; then
+  echo "{\"ok\":false,\"error\":\"addons/asset_bridge missing in $PROJECT\"}"; exit 2
+fi
+
+# Godot runs with --path, so make filesystem arguments absolute.
+args=()
+prev=""
+for a in "$@"; do
+  if [[ "$a" != res://* && ( -e "$a" || "$prev" == "--report" ) ]]; then
+    args+=("$(realpath -m -- "$a")")
+  else
+    args+=("$a")
+  fi
+  prev="$a"
+done
+
+# Keep Godot's log next to the project, not in /tmp (often a small RAM disk).
+mkdir -p "$PROJECT/.godot" 2>/dev/null
+log="$PROJECT/.godot/asset_bridge_cli.$$.log"
+trap 'rm -f "$log"' EXIT
+if ! : >"$log" 2>/dev/null; then
+  echo "{\"ok\":false,\"error\":\"cannot write $log (disk full?)\"}"; exit 1
+fi
+"$GODOT_BIN" --headless --path "$PROJECT" --script res://addons/asset_bridge/cli.gd -- "${args[@]}" >"$log" 2>&1
+code=$?
+[[ $VERBOSE -eq 1 ]] && grep -v '^ASSET_BRIDGE_RESULT ' "$log" >&2
+result="$(grep -m1 '^ASSET_BRIDGE_RESULT ' "$log" | sed 's/^ASSET_BRIDGE_RESULT //')"
+if [[ -z "$result" ]]; then
+  tail -n 40 "$log" >&2
+  echo '{"ok":false,"error":"no result from Godot; rerun with --verbose"}'
+  exit 1
+fi
+echo "$result"
+exit $code

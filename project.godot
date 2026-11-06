@@ -1,0 +1,11 @@
+; Development project for the Asset Bridge addon.
+config_version=5
+
+[application]
+
+config/name="Asset Bridge (dev)"
+config/features=PackedStringArray("4.3")
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/asset_bridge/plugin.cfg")

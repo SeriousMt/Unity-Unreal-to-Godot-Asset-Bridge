@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Prints an Unreal package's summary, imports, exports and properties.
+#   tools/uasset-dump path/to/Asset.uasset [more.uasset ...]
+here="$(cd "$(dirname "$0")" && pwd)"
+exec python3 -I -c "import sys; sys.path.insert(0, sys.argv.pop(1)); from uasset import dump" \
+  "$here/../addons/asset_bridge/unreal" "$@"

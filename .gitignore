@@ -1,0 +1,9 @@
+.godot/
+/imported/
+*.import
+!addons/**/*.import
+tests/out/
+tests/out_real/
+addons/asset_bridge/unreal/bin/
+__pycache__/
+*.pyc
