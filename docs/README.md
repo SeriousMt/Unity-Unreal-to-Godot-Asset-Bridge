@@ -9,6 +9,7 @@
 | [Unreal internals](unreal-internals.md) | understand the `.uasset` reader: package layout, UE4/UE5 mesh and texture formats, Oodle, material tracing |
 | [Troubleshooting](troubleshooting.md) | fix a failed or wrong-looking import |
 | [Development](development.md) | work on Asset Bridge itself: layout, tests, debugging tools, adding formats |
+| [Asset Library](asset-library.md) | publish a release to the Godot Asset Library |
 
 Short version:
 

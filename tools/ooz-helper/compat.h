@@ -1,4 +1,5 @@
 // Linux/GCC/Clang replacement for ooz's Windows-only stdafx.h.
+// SPDX-License-Identifier: MIT (this file). The built ab-ooz binary links ooz and is GPL-3.0-or-later.
 #pragma once
 
 #include <assert.h>

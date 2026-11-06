@@ -140,6 +140,9 @@ func _on_import() -> void:
 	_log.append_text("\n[i]Godot is importing the new files…[/i]\n")
 	while fs.is_scanning():
 		await get_tree().process_frame
+	var again := U.models_needing_second_import(report.get("files", []))
+	if not again.is_empty():
+		fs.reimport_files(again)
 	_log.append_text("[color=green]Done.[/color] Output: %s\n" % _out.text)
 
 

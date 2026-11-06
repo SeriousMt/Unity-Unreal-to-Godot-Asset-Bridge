@@ -60,6 +60,11 @@ tools/uasset-dump /path/to/MI_Thing.uasset
 
 Then fix the `.tres` by hand, or report the pattern so the heuristics can learn it.
 
+**Models keep their original materials (Godot 4.3)**
+Godot 4.3 imports models before their remapped materials can be loaded. Asset
+Bridge reimports those models once more automatically. If you imported files
+some other way, select the model and click *Reimport*.
+
 **Objects are rotated or mirrored**
 Unity scenes are converted by mirroring the X axis, which matches how both
 engines import FBX files. A model whose FBX was imported in Unity with

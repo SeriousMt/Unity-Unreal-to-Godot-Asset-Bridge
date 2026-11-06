@@ -282,3 +282,33 @@ static func _octal(s: String) -> int:
 			break
 		n = n * 8 + (c.unicode_at(0) - 48)
 	return n
+
+
+## Godot before 4.4 imports models before the external materials they are
+## remapped to can be loaded, so the first import keeps the model's own
+## materials. Returns the generated models that need a second import.
+static func models_needing_second_import(files: Array) -> PackedStringArray:
+	var out := PackedStringArray()
+	var v := Engine.get_version_info()
+	if int(v.major) > 4 or (int(v.major) == 4 and int(v.minor) >= 4):
+		return out
+	for f in files:
+		var path := String(f)
+		if not (ext_of(path) in PROBE_MODEL_EXTS):
+			continue
+		var imp := globalize(path) + ".import"
+		if FileAccess.file_exists(imp) and read_text(imp).contains("use_external/enabled"):
+			out.append(path)
+	return out
+
+
+## Makes the next --import run reimport [param res_paths] by dropping their
+## cached import checksums.
+static func invalidate_imports(res_paths: PackedStringArray) -> void:
+	var dir := ProjectSettings.globalize_path("res://.godot/imported")
+	var names := DirAccess.get_files_at(dir)
+	for p in res_paths:
+		var prefix := p.get_file() + "-"
+		for n in names:
+			if n.begins_with(prefix) and n.ends_with(".md5"):
+				DirAccess.remove_absolute(dir + "/" + n)

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT (this file). The built ab-ooz binary links ooz and is GPL-3.0-or-later.
 // ab-ooz: decompresses an Unreal Engine 5 FCompressedBuffer (as stored in a
 // package trailer) using ooz's open-source Kraken/Mermaid/Selkie/Leviathan
 // decoder. Built by build.sh; the resulting program is GPL-3.0-or-later

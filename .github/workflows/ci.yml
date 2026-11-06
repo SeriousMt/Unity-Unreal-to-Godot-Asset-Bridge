@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  unit:
+    name: Unreal format unit tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build ab-ooz helper
+        run: tools/ooz-helper/build.sh
+      - name: Unit tests (with helper)
+        run: python3 -I tests/test_uasset.py
+
+  godot:
+    name: Godot ${{ matrix.godot }} end to end
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        godot: ["4.3", "4.7.2"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender, ImageMagick
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends blender imagemagick unzip
+      - name: Download Godot
+        run: |
+          v="${{ matrix.godot }}"
+          curl -sSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${v}-stable/Godot_v${v}-stable_linux.x86_64.zip"
+          unzip -q godot.zip -d "$RUNNER_TEMP/godot"
+          echo "GODOT=$RUNNER_TEMP/godot/Godot_v${v}-stable_linux.x86_64" >> "$GITHUB_ENV"
+      - name: Syntax check addon scripts
+        run: |
+          status=0
+          for f in $(git ls-files 'addons/*.gd'); do
+            out="$("$GODOT" --headless --path . --check-only --script "res://$f" 2>&1 | grep -E 'SCRIPT ERROR|Parse Error|Compile Error' || true)"
+            if [ -n "$out" ]; then echo "::error file=$f::$out"; status=1; fi
+          done
+          exit $status
+      - name: End-to-end test
+        run: |
+          tests/run.sh | tee result.log
+          ! grep -q FAIL result.log

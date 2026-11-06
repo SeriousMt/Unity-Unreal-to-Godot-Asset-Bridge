@@ -75,6 +75,11 @@ func _import(rest: PackedStringArray) -> Dictionary:
 	var import_log := []
 	var code := OS.execute(exe, ["--headless", "--path", project, "--import"], import_log, true)
 	result["godot_import_exit_code"] = code
+	var again := U.models_needing_second_import(result.get("files", []))
+	if not again.is_empty():
+		U.invalidate_imports(again)
+		OS.execute(exe, ["--headless", "--path", project, "--import"], import_log, true)
+		result["second_import_models"] = again.size()
 	var vout := []
 	OS.execute(exe, ["--headless", "--path", project, "--script", "res://addons/asset_bridge/cli.gd", "--", "verify", out], vout, true)
 	var verify := _parse_result("\n".join(vout))

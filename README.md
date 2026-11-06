@@ -54,6 +54,7 @@ tools/ooz-helper/build.sh
 - [Unreal internals](docs/unreal-internals.md): the `.uasset` reader, UE4/UE5 formats, Oodle, material tracing
 - [Troubleshooting](docs/troubleshooting.md)
 - [Development](docs/development.md): layout, tests, visual checks, debugging tools
+- [Contributing](CONTRIBUTING.md): reporting packs that convert badly (without sharing paid files), changing code
 
 ## Tested with real store content
 
@@ -65,12 +66,19 @@ tools/ooz-helper/build.sh
 | Underground Tunnel (Fab) | Unreal (UE 4.26), 5.5 GB | 317 meshes, 217 textures, 103 materials |
 | Sharur's Normandy Village (Fab) | Unreal (UE 5.6), 3.9 GB | 105 meshes, 178 textures, 93 materials |
 
-## Licensing
+## License
 
-Asset Bridge converts files; it doesn't change their license. Some marketplace
+Asset Bridge is released under the [MIT License](LICENSE).
+
+It converts files; it doesn't change their license. Some marketplace
 content is licensed for one engine only, so check each asset's license before you
 ship it.
 
 The optional `ab-ooz` helper is built from [ooz](https://github.com/powzix/ooz)
 (GPL-3.0-or-later) and runs as a separate program. Its source isn't included
-here, and it isn't exported with your game.
+here, and it isn't exported with your game. Anyone distributing a prebuilt
+`ab-ooz` must also provide its source under the GPL.
+
+Asset Bridge is an independent project. It is not affiliated with or endorsed by
+Unity Technologies, Epic Games (Unreal Engine, Fab, Oodle), Leartes Studios or
+the Godot Foundation. Their names are used only to describe compatibility.

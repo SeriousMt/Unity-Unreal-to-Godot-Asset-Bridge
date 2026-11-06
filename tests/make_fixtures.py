@@ -476,7 +476,7 @@ def make_unitypackage(out_dir, work):
     moss_png = os.path.join(work, "moss_src.png")
     png(moss_png, 32, 32, lambda x, y: (60, 160, 50, 255 if (x + y) % 8 else 0))
     t["moss"] = os.path.join(work, "moss.tif")
-    subprocess.run(["magick", moss_png, t["moss"]], check=True)
+    subprocess.run([shutil.which("magick") or "convert", moss_png, t["moss"]], check=True)
     entries += [
         (G["t_albedo"], "Assets/Demo/Textures/rock_albedo.png", t["albedo"], tex_meta(G["t_albedo"])),
         (G["t_normal"], "Assets/Demo/Textures/rock_normal.png", t["normal"], tex_meta(G["t_normal"], True)),
